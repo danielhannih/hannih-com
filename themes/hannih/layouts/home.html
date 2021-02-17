@@ -1,30 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html ⚡ lang="{{ .Site.LanguageCode }}">
 <head>
+  <!-- AMP Variables -->
+  {{ $amp_runtime := "https://cdn.ampproject.org/v0.js" }}
+
+
   <meta charset="utf-8">
+
+
+  <!-- 1. META -->
+  <meta name="description" content="{{ .Params.seo_description | default .Description }}">
   <meta name="viewport" content="width=device-width">
+
+  <!-- Social Media Stuff -->
+  <meta property="og:title" content="{{ .Params.seo_title | default .Title }}" />
+  <meta property="og:description" content="{{ .Params.seo_description | default .Description }}" />
+  <meta property="og:site_name" content="{{ .Site.Params.organizationName }}" />
+  <meta property="og:url" content="{{ .Permalink }}" />
+  <meta property="og:type" content="article" />
+  <meta property="article:publisher" content="{{ .Site.Params.facebookpage }}">
+  <meta property="article:published_time" content="{{ .PublishDate.Format "2006-01-02T15:04:05" }}" />
+  <meta property="article:modified_time" content="{{ .Date.Format "2006-01-02T15:04:05"  }}" />
+
+
+  {{- with .Resources.Match "hero*" }}
+    {{ range . }}
+      {{ $imgfb := .Fill "1200x630" }}
+    	<meta property="og:image" content="{{ $imgfb.Permalink }}" />
+    	<meta property="og:image:secure_url" content="{{ $imgfb.Permalink }}">
+    {{ end }}
+  {{ end }}
+
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="{{ .Site.Params.twitteruser }}">
+  <meta name="twitter:site" content="{{ .Site.Params.twitteruser }}">
+  <meta name="twitter:title" content="{{ .Params.seo_title | default .Title }}">
+  <meta name="twitter:description" content="{{ .Params.seo_description | default .Description }}">
+  {{- with .Resources.Match "hero*" }}
+  	<meta name="twitter:image" content="{{ range . }}{{ $imgtwitter := .Fill "1200x675" }}{{ $imgtwitter.Permalink }}{{ end }}">
+  {{ end }}
+
+
+
+  <!-- 2. AMP Runtime -->
+  <!-- Preload the AMP runtime v0.js -->
+  <link rel="preload" as="script" href="{{ $amp_runtime }}">
+
+
+
+  <!-- 3. Preload AMP Components & Extensions  -->
+
+
+
+  <!-- 4. Preconnect to unknown resources ahead eg: https://fonts.gstatic.com/ -->
+  {{ with .Resources.Match "hero*" }}
+    {{ range . }}
+      {{ $heroImage := .Fill "720x640 q85" }}
+      {{ $heroImageWide := .Fill "1280x640 q85" }}
+      <link rel="preload" media="(min-width: 640px)" href="{{ $heroImageWide.RelPermalink }}" as="image">
+      <link rel="preload" media="(max-width: 639px)" href="{{ $heroImage.RelPermalink }}" as="image">
+    {{ end }}
+  {{ end }}
+
+
+  <!-- 5. Load the AMP runtime: -->
+  <script async src="{{ $amp_runtime }}"></script>
+
+
+
+  <!-- 6. Load your AMP Extensions -->
+
+
+
+  <!-- 7. Load otherscripts that are not render blocking -->
+
+  {{/* Schema */}}
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": "Now ship it.",
+      "alternateName": "nowship.it",
+      "url": "{{ .Site.BaseURL }}"
+  }
+  </script>
+
+
+
+  <!-- Organization -->
+
+  <script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": "Now ship it.",
+    "url": "{{ .Site.BaseURL }}"
+    {{ with .Site.Params.organizationLogo }}, "logo": "{{ . }}"{{ end }},
+
+    "contactPoint" : [
+          {
+              "@type" : "ContactPoint",
+              "contactType" : "customer service",
+              "email": "hi@nowship.it",
+              "url": "https://nowship.it/"
+          }
+      ]
+  }
+  </script>
+
+
+
+
+
+  <!-- 8. Styling / CSS -->
+  <style amp-custom>
+    {{ with .Resources.Match "hero*" }}
+      {{ range . }}
+        {{ $heroImage := .Fill "720x640 q85" }}
+        {{ $heroImageWide := .Fill "1280x640 q85" }}
+        main header div {background-image: url("{{ $heroImage.RelPermalink }}");}
+        @media (min-width: 640px){main header div {background-image: url("{{ $heroImageWide.RelPermalink }}");}}
+      {{ end }}
+    {{ end }}
+    {{ (resources.Get "home.scss" | toCSS | postCSS (dict "use" "autoprefixer") | minify).Content | safeCSS }}
+  </style>
+
+
+
+
+  <!-- 9. Add any other tags allowed in the head section. In particular, any external fonts should go last since they block rendering -->
+
+
+
+  <!-- RSS -->
+  {{ range .AlternativeOutputFormats -}}
+  	{{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+  {{ end -}}
+
+
+  <!-- 10. AMP boilerplate comes last! -->
+  <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
+
+
+  <!-- 11. Canonical + Title -->
   <link rel="canonical" href="{{ .Permalink }}">
-  <title>{{ .Site.Title }}</title>
+  <title>{{ .Params.seo_title | default .Title }}</title>
 </head>
 
+
 <body>
-  <main>
 
-<h1>Now ship it.</h1>
 
-{{ with .Site.GetPage "/projects" }}
-{{ range .Pages.ByPublishDate.Reverse }}
+<nav>
+  <a href="#digital">Digital</a>
+  <a href="#acrylic">Acrylic Paintings</a>
+  <a href="#about">About</a>
+</nav>
 
-<a href="{{ .Permalink }}">
-  <li>
-    {{ .Title }}
-  </li>
-</a>
+<h1>The Art of Daniel Hannih</h1>
 
-{{ end }}
-{{ end }}
-</main>
+
+<footer>
+</footer>
+
 </body>
-
 </html>
