@@ -1,0 +1,98 @@
+$font: BlinkMacSystemFont,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+
+
+
+$sideGutter: 16px;
+
+$fullWidthHero: 100%;
+$boxedHero: calc(100% - #{$sideGutter*2});
+$heroWidth: $fullWidthHero;
+
+
+
+
+
+
+:root {
+  --font: #{$font};
+}
+
+body {
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-size: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  margin: 0;
+  padding: 24px 0 12px;
+}
+
+h1 {
+  font-size: 36px;
+
+}
+
+p {
+  margin: 0 0 24px;
+  font-weight: 300;
+}
+
+p, a {
+  font-size: 18px;
+  line-height: 1.65em;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  nav {
+    height: 70px;
+    background: grey;
+    width: 100%;
+  }
+  header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 0;
+    width: 100%;
+    h1 {
+      max-width: 960px;
+    }
+    h1,
+    p {
+      width: calc(100% - #{$sideGutter*2});
+      text-align: center;
+    }
+    p {
+      max-width: 720px;
+    }
+    div {
+      width: $heroWidth;
+      margin-left: auto;
+      margin-right: auto;
+      height: 360px;
+      background-size: cover;
+      background-position: center;
+      @media (min-width: 640px) {
+        height: 480px;
+      }
+      @media (min-width: 992px) {
+        max-width: 960px;
+        border-radius: 20px;
+      }
+      & + p {
+        text-align: left;
+      }
+    }
+  }
+  article {
+    width: calc(100% - #{$sideGutter*2});
+    max-width: 720px;
+  }
+}

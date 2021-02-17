@@ -1,0 +1,24 @@
+baseURL = "https://hannih.com/"
+defaultContentLanguage ="en"
+theme = "hannih"
+enableRobotsTXT = true
+disableHugoGeneratorInject = true
+
+uglyURLs = false
+
+cssrelativeurl = true
+
+[params]
+ companyname = "Daniel Hannih"
+
+[taxonomies] # turn those tax mofos off
+tag = ""
+category = ""
+
+[languages]
+[languages.en]
+languageName = "English"
+languageCode = "en"
+contentDir = "content/en"
+weight = 0
+title = "The Art of Daniel Hannih"
